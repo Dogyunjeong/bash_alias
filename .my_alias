@@ -1,0 +1,41 @@
+## Git function
+function gitPushFn () {
+    if [[ $1 && $2 ]]; then
+        git push $1 $2
+    elif [[ $1 != 'master' ]]; then
+        git push origin $1
+    fi
+}
+
+function gitFetchFn () {
+    if [[ $1 && $2 ]]; then
+        git fetch $1; git checkout $1/$2; git branch -D $2; git checkout -b $2;
+    elif [ $1 ]; then
+        git fetch $1; git checkout $1/master; git branch -D master; git checkout -b master;
+    else
+        git fetch upstream; git checkout upstream/master; git branch -D master; git checkout -b master;
+    fi
+}
+
+function gitBranchFn () {
+    git branch "$@"
+}
+
+function gitCheckoutFn () {
+    git checkout "$@"
+}
+
+function gitRebaseFn () {
+    if [ $1 ]; then
+        git rebase "$@"
+    else
+        git rebase master
+    fi
+}
+## Git alias
+alias gs='git status'
+alias gb='git branch'
+alias gc='git checkout'
+alias gp='gitPushFn'
+alias gf='gitFetchFn'
+alias gr='gitRebaseFn'
