@@ -1,0 +1,49 @@
+
+## Slayte Func
+
+function cdSlayteFn () {
+    if [ $1 ]; then
+        cd ~/Desktop/Projects/slayte; cd $1
+    else
+        cd ~/Desktop/Projects/slayte;
+    fi;
+}
+
+function slatyeIterFn() {
+    sl web; "$@"; sl app; "$@"; sl machine; "$@"; sl enum; "$@"; sl lib; "$@"
+}
+
+function slayteFetchFn () {
+    if [[ $1 && $2 ]]; then
+        slatyeIterFn gitFetchFn $1 $2
+    elif [ $1 ]; then
+        sl $1; gf;
+    else
+        sl web; gf; sl app; gf; sl machine; gf; sl enum; gf; sl lib; gf;
+    fi;
+}
+
+function slayteClientUpFn() {
+    sl; sleval; docker container exec -i dev_db_1 mysql -uroot -ptesting admin <<< "INSERT IGNORE INTO versions (version, target) VALUES ('$(cat web/version.txt)', '$(cat web/version.txt)'); UPDATE versions SET target='$(cat web/version.txt)' WHERE version='latest'"
+}
+
+
+## Slayte alias
+alias slecho='echo slayte'
+
+alias docker-ps='docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.RunningFor}}\t{{.Ports}}\t{{.Image}}"'
+
+alias sleval='eval $(docker-machine env slayte)'
+alias sl='cdSlayteFn'
+
+alias slwi='sl web; yarn dev-internal'
+alias slwp='sl web; yarn dev-public'
+alias slws='sl web; yarn dev-server'
+
+alias slat='sl app; yarn tsc --sourceMap --watch'
+alias slate='sl app; yarn upgrade-enum; yarn tsc --sourceMap --watch'
+alias slag='sleval; sl app; grunt'
+alias slgb='slatyeIterFn gitBranchFn'
+alias slgc='slatyeIterFn gitCheckoutFn'
+alias slgf='slayteFetchFn'
+alias sl-client="slayteClientUpFn"
